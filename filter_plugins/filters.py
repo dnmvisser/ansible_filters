@@ -1,14 +1,15 @@
 """ Custom filters for Ansible."""
-import tarfile
-import io
-import base64
-import time
-import dateutil.parser
 
 # Creates a base64 tarball from a list of file descriptions
 def files2tar(files, compress='gz',
                 owner='root', group='root',
                 file_mode=0o0644, dir_mode=0o0755):
+
+    import tarfile
+    import io
+    import base64
+    import time
+    import dateutil.parser
 
     tar_obj = io.BytesIO()
 

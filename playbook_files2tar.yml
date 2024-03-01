@@ -1,0 +1,66 @@
+---
+- name: Filesystem overlay through environment variable
+  hosts: all
+  gather_facts: false
+
+  tasks:
+
+    - name: Run container
+      community.docker.docker_container:
+        name: foobar
+        # image: debian:bookworm-slim
+        image: alpine
+        image_name_mismatch: ignore
+        env:
+          OVERLAY: "{{ files | files2tar }}"
+        command:
+          - sleep
+          - infinity
+        restart: true
+
+    # Once the container is created/restarted:
+    #
+    #   docker exec -ti foobar sh
+    #   echo $OVERLAY | base64 -d | tar xzv -C /
+
+
+  vars:
+    files:
+        # Containing directory will automatically be created
+      - path: /etc/foo/bar.conf
+        content: |
+          # This is the BAR configuration file
+          bar = "auto"
+          foo = "init"
+      - path: /etc/foo/bar.key
+        mode: 0400
+        mtime: "2019-09-11 11:23:10"
+        content: |
+          -----BEGIN PRIVATE KEY-----
+          MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQg3LUeeidKyopx08+C
+          AFyhSoUNCAPM3bnSTPyyioPKZVqhRANCAARDxKSgcC5CWuFLWfyIqRMkxsIalSJD
+          TSzh/TzoZNMKMENmgYec/7R5Y2+w68VcCevL7+GQ2iCxqi92vHqEg6h/
+          -----END PRIVATE KEY-----
+      - path: /etc/foo/bar.crt
+        content: |
+          -----BEGIN CERTIFICATE-----
+          MIIBcDCCARegAwIBAgIUVOytPG0cdaDJw2WW0C1TB61FAsAwCgYIKoZIzj0EAwIw
+          DjEMMAoGA1UEAwwDZm9vMB4XDTI0MDIyOTIyMjAwOVoXDTM4MDExNzIyMjAwOVow
+          DjEMMAoGA1UEAwwDZm9vMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEQ8SkoHAu
+          QlrhS1n8iKkTJMbCGpUiQ00s4f086GTTCjBDZoGHnP+0eWNvsOvFXAnry+/hkNog
+          saovdrx6hIOof6NTMFEwHQYDVR0OBBYEFAs+01e5AiHn9BZ8Ws3IXEwe7WbmMB8G
+          A1UdIwQYMBaAFAs+01e5AiHn9BZ8Ws3IXEwe7WbmMA8GA1UdEwEB/wQFMAMBAf8w
+          CgYIKoZIzj0EAwIDRwAwRAIgYfJJyD2LAVZbleL9RmX4ES1ScQZuti5SVuCXpDRp
+          PL8CIDWSGWxZx8Zwz9B7/8w1QhTZg1PtxG6FluqsaiAj1GeN
+          -----END CERTIFICATE-----
+
+      - path: /etc/zebra.conf
+        owner: www-data
+        group: www-data
+        mode: 0440
+        content: "{{ lookup('ansible.builtin.template', 'zebra.conf.j2') }}"
+
+        # Will be created recursively
+      - path: /opt/foobar/bas/baz/bor/12/df/ddd
+        type: directory
+        mode: 02775

@@ -1,0 +1,5 @@
+ansible-core
+docker
+jmespath
+python-dateutil
+requests
