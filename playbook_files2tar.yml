@@ -8,7 +8,6 @@
     - name: Run container
       community.docker.docker_container:
         name: foobar
-        # image: debian:bookworm-slim
         image: alpine
         image_name_mismatch: ignore
         env:
@@ -21,7 +20,7 @@
     # Once the container is created/restarted:
     #
     #   docker exec -ti foobar sh
-    #   echo $OVERLAY | base64 -d | tar xzv -C /
+    #   echo "${OVERLAY}" | base64 -d | tar xzv -C /
 
 
   vars:
