@@ -38,7 +38,7 @@ def files2tar(files, compress='gz',
                 tarinfo.mode = file.get('mode', dir_mode)
                 tar.addfile(tarinfo)
 
-    return base64.b64encode(tar_obj.getbuffer())
+    return base64.b64encode(tar_obj.getbuffer()).decode()
 
 
 class FilterModule(object):
